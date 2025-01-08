@@ -22,7 +22,7 @@ function Navbar() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-3xl bg-background/10 flex justify-between items-center md:px-12 px-6 py-4">
+    <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-3xl bg-background/60 flex justify-between items-center md:px-12 px-6 py-4">
       <Link href={"/"} className="flex items-center space-x-3">
         <h1 className="md:text-3xl text-xl font-semibold">MindScroll</h1>
       </Link>
@@ -57,7 +57,7 @@ function Navbar() {
                 )}
               </DropdownMenuTrigger>
               <DropdownMenuContent className=" mr-6">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>{session?.user?.name }</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Dashboard</DropdownMenuItem>
                 <DropdownMenuItem>Add transictions</DropdownMenuItem>
