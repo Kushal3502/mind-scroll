@@ -58,13 +58,13 @@ const createExtensions = (placeholder: string) => [
 
       const response = await axios.post("/api/image-upload", formData);
 
-      if (!response.data) {
+      if (!response.data.success) {
         throw new Error("Upload failed");
       }
 
       return {
         id: randomId(),
-        src: response.data.secure_url,
+        src: response.data.response.secure_url,
       };
     },
     onToggle(editor, files, pos) {
@@ -124,7 +124,7 @@ const createExtensions = (placeholder: string) => [
   FileHandler.configure({
     allowBase64: true,
     allowedMimeTypes: ["image/*"],
-    maxFileSize: 5 * 1024 * 1024,
+    maxFileSize: 30 * 1024 * 1024,
     onDrop: (editor, files, pos) => {
       files.forEach(async (file) => {
         const src = await fileToBase64(file);
