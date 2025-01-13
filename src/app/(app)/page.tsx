@@ -6,11 +6,7 @@ export default async function Home() {
 
   return (
     <div >
-      <h1 className=" h-screen bg-indigo-400">MindScroll</h1>
-      <h1 className=" h-screen">MindScroll</h1>
-      <h1>MindScroll</h1>
-      <h1>MindScroll</h1>
-      <h1>MindScroll</h1>
+      Landing
     </div>
   );
 }

@@ -9,7 +9,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Moon, Sun } from "lucide-react";
+import {
+  Heart,
+  House,
+  LayoutDashboard,
+  LogOut,
+  Moon,
+  Pencil,
+  Sun,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -17,16 +25,53 @@ import { Button } from "../ui/button";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
+const navbarItems = [
+  {
+    name: "Home",
+    icon: <House />,
+    path: "/home",
+  },
+  {
+    name: "Add blog",
+    icon: <Pencil />,
+    path: "/blogs/add",
+  },
+  {
+    name: "Favourites",
+    icon: <Heart />,
+    path: "/blogs/favourites",
+  },
+  {
+    name: "Dashboard",
+    icon: <LayoutDashboard />,
+    path: "/dashboard",
+  },
+];
+
 function Navbar() {
   const { data: session, status } = useSession();
   const { theme, setTheme } = useTheme();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-3xl bg-background/60 flex justify-between items-center md:px-12 px-6 py-4">
+    <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-3xl bg-background/60 flex justify-between items-center md:px-14 px-6 py-4">
       <Link href={"/"} className="flex items-center space-x-3">
         <h1 className="md:text-3xl text-xl font-semibold">MindScroll</h1>
       </Link>
       <div className="flex items-center gap-4">
+        <div className="md:flex items-center gap-2 hidden">
+          {navbarItems.map((item) => (
+            <Link href={item.path} key={item.name}>
+              <Button
+                variant="ghost"
+                className="text-base hover:bg-accent flex items-center gap-2"
+                aria-label={item.name}
+              >
+                {item.icon}
+                {item.name}
+              </Button>
+            </Link>
+          ))}
+        </div>
         <div>
           <Button
             variant="outline"
@@ -56,12 +101,25 @@ function Navbar() {
                   </Avatar>
                 )}
               </DropdownMenuTrigger>
-              <DropdownMenuContent className=" mr-6">
-                <DropdownMenuLabel>{session?.user?.name }</DropdownMenuLabel>
+              <DropdownMenuContent className="m-4 w-52">
+                <DropdownMenuLabel>{session?.user?.name}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Dashboard</DropdownMenuItem>
-                <DropdownMenuItem>Add transictions</DropdownMenuItem>
+                {navbarItems.map((item) => (
+                  <DropdownMenuItem
+                    key={item.name}
+                    className="cursor-pointer p-0"
+                  >
+                    <Link
+                      href={item.path}
+                      className="flex items-center gap-2 w-full p-2 hover:bg-accent rounded-sm"
+                    >
+                      {item.icon}
+                      {item.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
                 <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut />
                   Sign Out
                 </DropdownMenuItem>
               </DropdownMenuContent>
