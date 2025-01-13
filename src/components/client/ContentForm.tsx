@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { contentSchema } from "@/lib/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -32,10 +33,29 @@ function ContentForm({ title = "", thumbnail = "", content = "" }: Data) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof contentSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+  async function onSubmit(values: z.infer<typeof contentSchema>) {
     console.log(values);
+
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
+    const file = fileInput?.files?.[0];
+
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const uploadResponse = await axios.post("/api/image-upload", formData);
+
+      if (uploadResponse.data.success) {
+        const response = await axios.post("/api/blog/add", {
+          title: values.title,
+          thumbnail: String(uploadResponse.data.response.secure_url),
+          content: values.content,
+        });
+        console.log(response);
+      }
+    }
   }
 
   return (
@@ -48,11 +68,7 @@ function ContentForm({ title = "", thumbnail = "", content = "" }: Data) {
             <FormItem>
               <FormLabel>Title</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Enter your title"
-                  {...field}
-                  defaultValue={title}
-                />
+                <Input placeholder="Enter your title" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -84,7 +100,13 @@ function ContentForm({ title = "", thumbnail = "", content = "" }: Data) {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button
+          type="submit"
+          className=" w-full"
+          disabled={form.formState.isSubmitting}
+        >
+          {form.formState.isSubmitting ? "Please wait" : "Publish"}
+        </Button>
       </form>
     </Form>
   );

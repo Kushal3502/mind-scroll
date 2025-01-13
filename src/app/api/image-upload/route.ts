@@ -14,6 +14,7 @@ export async function POST(request: NextRequest) {
   if (!file)
     return NextResponse.json(
       {
+        success: false,
         error: "No file provided",
       },
       {
@@ -39,11 +40,15 @@ export async function POST(request: NextRequest) {
         .end(buffer);
     });
 
-    return NextResponse.json(response);
+    return NextResponse.json({
+      success: true,
+      response,
+    });
   } catch (error) {
     console.log("File upload error :: ", error);
     return NextResponse.json(
       {
+        success: false,
         error: "Upload failed",
       },
       {
