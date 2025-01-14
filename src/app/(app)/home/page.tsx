@@ -1,9 +1,15 @@
-import React from 'react'
+import Blogs from "@/components/client/Blogs";
+import React from "react";
 
 function Home() {
   return (
-    <div>Home</div>
-  )
+    <div>
+      <div>
+        <Blogs />
+      </div>
+      <div></div>
+    </div>
+  );
 }
 
-export default Home
+export default Home;

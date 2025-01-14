@@ -1,0 +1,156 @@
+[
+  {
+    name: "Technology",
+    subcategories: [
+      "Gadgets",
+      "Software",
+      "AI and Machine Learning",
+      "Programming and Development",
+      "Cybersecurity",
+      "Reviews",
+    ],
+  },
+  {
+    name: "Lifestyle",
+    subcategories: [
+      "Health and Wellness",
+      "Fitness",
+      "Travel",
+      "Food and Recipes",
+      "Personal Development",
+      "Hobbies",
+    ],
+  },
+  {
+    name: "Business",
+    subcategories: [
+      "Entrepreneurship",
+      "Startups",
+      "Marketing and SEO",
+      "Finance and Investing",
+      "Leadership",
+      "Productivity",
+    ],
+  },
+  {
+    name: "Education",
+    subcategories: [
+      "Online Learning",
+      "Study Tips",
+      "Educational Resources",
+      "Career Guidance",
+      "Language Learning",
+      "Academic Research",
+    ],
+  },
+  {
+    name: "Entertainment",
+    subcategories: [
+      "Movies and TV Shows",
+      "Music",
+      "Video Games",
+      "Celebrity News",
+      "Books and Literature",
+      "Art and Design",
+    ],
+  },
+  {
+    name: "Fashion and Beauty",
+    subcategories: [
+      "Fashion Trends",
+      "Makeup Tutorials",
+      "Skincare",
+      "Style Tips",
+      "Accessories",
+      "Sustainable Fashion",
+    ],
+  },
+  {
+    name: "Home and Garden",
+    subcategories: [
+      "Interior Design",
+      "Gardening",
+      "DIY Projects",
+      "Home Improvement",
+      "Cleaning Tips",
+      "Organization",
+    ],
+  },
+  {
+    name: "Relationships",
+    subcategories: [
+      "Dating Advice",
+      "Marriage Tips",
+      "Parenting",
+      "Family Dynamics",
+      "Friendships",
+      "Personal Stories",
+    ],
+  },
+  {
+    name: "Sports",
+    subcategories: [
+      "Football (Soccer)",
+      "Basketball",
+      "Running",
+      "Fitness Workouts",
+      "Sports News",
+      "Athletes' Stories",
+    ],
+  },
+  {
+    name: "Science",
+    subcategories: [
+      "Space Exploration",
+      "Environmental Science",
+      "Biology",
+      "Chemistry",
+      "Physics",
+      "Scientific Discoveries",
+    ],
+  },
+  {
+    name: "Automotive",
+    subcategories: [
+      "Car Reviews",
+      "Motorcycles",
+      "Electric Vehicles",
+      "Maintenance Tips",
+      "Industry News",
+      "Driving Experiences",
+    ],
+  },
+  {
+    name: "Photography",
+    subcategories: [
+      "Photography Tips",
+      "Camera Reviews",
+      "Editing Techniques",
+      "Photo Stories",
+      "Travel Photography",
+      "Portrait Photography",
+    ],
+  },
+  {
+    name: "Travel",
+    subcategories: [
+      "Destinations",
+      "Travel Tips",
+      "Adventure Travel",
+      "Budget Travel",
+      "Cultural Experiences",
+      "Travel Stories",
+    ],
+  },
+  {
+    name: "News and Politics",
+    subcategories: [
+      "Current Events",
+      "Political Analysis",
+      "International Affairs",
+      "Opinion Pieces",
+      "Economic Trends",
+      "Social Issues",
+    ],
+  },
+];

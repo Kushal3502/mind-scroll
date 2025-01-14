@@ -36,11 +36,11 @@ const navbarItems = [
     icon: <Pencil />,
     path: "/blogs/add",
   },
-  {
-    name: "Favourites",
-    icon: <Heart />,
-    path: "/blogs/favourites",
-  },
+  // {
+  //   name: "Favourites",
+  //   icon: <Heart />,
+  //   path: "/blogs/favourites",
+  // },
   {
     name: "Dashboard",
     icon: <LayoutDashboard />,
