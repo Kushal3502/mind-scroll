@@ -1,13 +1,15 @@
 import Blogs from "@/components/client/Blogs";
-import React from "react";
+import Category from "@/components/client/Category";
 
 function Home() {
   return (
-    <div>
-      <div>
+    <div className=" grid md:grid-cols-3 gap-4">
+      <div className=" col-span-2">
         <Blogs />
       </div>
-      <div></div>
+      <div>
+        <Category />
+      </div>
     </div>
   );
 }

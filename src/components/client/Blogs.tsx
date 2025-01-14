@@ -3,6 +3,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import BlogCard from "./BlogCard";
+import { Card, CardContent, CardHeader } from "../ui/card";
+import { TrendingUp } from "lucide-react";
 
 export interface Blog {
   id: string;
@@ -33,9 +35,17 @@ function Blogs() {
   }, [currPage]);
 
   return (
-    <div className="">
-      {blogs && blogs.map((item) => <BlogCard blog={item} key={item.id} />)}
-    </div>
+    <Card className="">
+      <CardHeader>
+        <div className=" flex justify-start items-center gap-2 mb-4">
+          <span className=" text-xl font-semibold">Trending</span>
+          <TrendingUp className=" h-8 w-8" />
+        </div>
+      </CardHeader>
+      <CardContent>
+        {blogs && blogs.map((item) => <BlogCard blog={item} key={item.id} />)}
+      </CardContent>
+    </Card>
   );
 }
 

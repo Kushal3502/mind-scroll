@@ -8,7 +8,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col ">
       <Navbar />
-      <main className="flex-1 mx-auto max-w-screen-lg container mt-14 px-4 py-8">
+      <main className="flex-1 mx-auto max-w-screen-lg mt-14 px-4 py-8">
         {children}
       </main>
     </div>
