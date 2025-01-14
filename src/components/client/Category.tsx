@@ -6,16 +6,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 function Category() {
   return (
-    <Card className=" w-full">
+    <Card className=" shadow-md">
       <CardHeader className=" text-xl font-semibold">
         Search by category
       </CardHeader>
-      <CardContent>
+      <CardContent >
         <ScrollArea className="h-[400px]">
           <div className="space-y-6">
             {category.map((item, index) => (
               <div key={index} className="rounded-lg border p-4 shadow-sm">
-                <h3 className="mb-3 text-base">{item.name}</h3>
+                <h3 className="mb-3 text-base font-semibold">{item.name}</h3>
                 <div className="flex flex-wrap gap-2">
                   {item.subcategories.map((el, index) => (
                     <Badge

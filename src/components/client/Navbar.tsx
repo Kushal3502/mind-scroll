@@ -34,7 +34,7 @@ const navbarItems = [
   {
     name: "Add blog",
     icon: <Pencil />,
-    path: "/blogs/add",
+    path: "/blog/add",
   },
   // {
   //   name: "Favourites",

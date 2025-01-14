@@ -3,8 +3,17 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import BlogCard from "./BlogCard";
-import { Card, CardContent, CardHeader } from "../ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { TrendingUp } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export interface Blog {
   id: string;
@@ -30,14 +39,45 @@ function Blogs() {
     }
   }
 
+  const handlePrevious = () => {
+    if (currPage > 1) {
+      setCurrPage(currPage - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currPage < (pages || 1)) {
+      setCurrPage(currPage + 1);
+    }
+  };
+
+  const renderPageNumbers = () => {
+    if (!pages) return null;
+
+    const pageNumbers = [];
+    for (let i = 1; i <= pages; i++) {
+      pageNumbers.push(
+        <PaginationItem key={i}>
+          <PaginationLink
+            onClick={() => setCurrPage(i)}
+            isActive={currPage === i}
+          >
+            {i}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+    return pageNumbers;
+  };
+
   useEffect(() => {
     fetchBlogs();
   }, [currPage]);
 
   return (
-    <Card className="">
+    <Card className=" border-none">
       <CardHeader>
-        <div className=" flex justify-start items-center gap-2 mb-4">
+        <div className=" flex justify-start items-center gap-2">
           <span className=" text-xl font-semibold">Trending</span>
           <TrendingUp className=" h-8 w-8" />
         </div>
@@ -45,6 +85,21 @@ function Blogs() {
       <CardContent>
         {blogs && blogs.map((item) => <BlogCard blog={item} key={item.id} />)}
       </CardContent>
+      <CardFooter>
+        {totalBlogs && totalBlogs > 10 && (
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious onClick={handlePrevious} />
+              </PaginationItem>
+              {renderPageNumbers()}
+              <PaginationItem>
+                <PaginationNext onClick={handleNext} />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
+      </CardFooter>
     </Card>
   );
 }

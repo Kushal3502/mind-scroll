@@ -33,7 +33,7 @@ function BlogCard({ blog }: BlogCardProps) {
 
   return (
     <Link href={`/blog/${blog.id}`}>
-      <Card className="shadow-md w-full flex justify-between items-center ">
+      <Card className=" w-full flex justify-between items-center mb-4">
         <CardHeader className="p-4">
           <Image
             src={blog.thumbnail}
@@ -45,7 +45,7 @@ function BlogCard({ blog }: BlogCardProps) {
         </CardHeader>
         <div className="text-right">
           <CardContent className="space-y-2 p-4 flex flex-col items-end">
-            <h2 className="md:text-xl text-base font-bold  ">{blog.title}</h2>
+            <h2 className="md:text-lg text-base font-bold  ">{blog.title}</h2>
             <div className="flex items-center gap-2 text-sm">
               <span className="font-medium">
                 {new Date(blog.createdAt).toLocaleDateString("en-US", {
@@ -58,7 +58,9 @@ function BlogCard({ blog }: BlogCardProps) {
           </CardContent>
           <CardFooter className="flex items-center justify-end gap-3 p-4">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={user?.image} />
+              <AvatarImage
+                src={user?.image || "https://github.com/shadcn.png"}
+              />
               <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
             </Avatar>
             <span className="text-sm ">{user?.name}</span>
