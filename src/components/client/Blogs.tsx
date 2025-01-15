@@ -1,24 +1,24 @@
 "use client";
 
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import BlogCard from "./BlogCard";
-import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
-import { TrendingUp } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import axios from "axios";
+import { TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
+import BlogCard from "./BlogCard";
 
 export interface Blog {
   id: string;
   title: string;
   thumbnail: string;
+  content: string;
   tags: string[];
   author: string;
   createdAt: Date;
@@ -76,7 +76,7 @@ function Blogs() {
   }, [currPage]);
 
   return (
-    <Card className=" border-none">
+    <Card>
       <CardHeader>
         <div className=" flex justify-start items-center gap-2">
           <span className=" text-xl font-semibold">Trending</span>

@@ -13,7 +13,7 @@ interface BlogCardProps {
   blog: Blog;
 }
 
-interface User {
+export interface User {
   name: string;
   image: string;
 }
@@ -34,7 +34,7 @@ function BlogCard({ blog }: BlogCardProps) {
 
   return (
     <Link href={`/blog/${blog.id}`}>
-      <Card className=" w-full flex justify-around items-center mb-4">
+      <Card className=" w-full flex justify-around items-center mb-4 hover:shadow-md">
         <CardHeader className="md:p-4 p-2">
           <Image
             src={blog.thumbnail}
@@ -44,12 +44,12 @@ function BlogCard({ blog }: BlogCardProps) {
             className="w-full md:h-40 h-24 object-cover rounded-lg "
           />
         </CardHeader>
-        <div className="text-justify">
+        <div className="">
           <CardContent className="space-y-2 p-4 flex flex-col">
-            <h2 className="md:text-lg text-sm font-bold  ">{blog.title}</h2>
+            <h2 className="md:text-lg text-sm font-bold text-justify">{blog.title}</h2>
             <div className=" flex flex-wrap gap-2">
               {blog.tags.map((item, index) => (
-                <Badge variant="secondary" key={index}>
+                <Badge key={index}>
                   {item}
                 </Badge>
               ))}
@@ -64,7 +64,7 @@ function BlogCard({ blog }: BlogCardProps) {
               </span>
             </div>
           </CardContent>
-          <CardFooter className="flex items-center gap-3 p-4">
+          <CardFooter className="flex items-center gap-3 text-left">
             <Avatar className="h-8 w-8">
               <AvatarImage
                 src={user?.image || "https://github.com/shadcn.png"}
