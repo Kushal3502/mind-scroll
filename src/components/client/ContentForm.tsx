@@ -27,9 +27,14 @@ interface Data {
   title?: string;
   thumbnail?: string;
   content?: string;
+  tags?: string[];
 }
 
-function ContentForm({ title = "", thumbnail = "", content = "" }: Data) {
+interface ContentFormProp {
+  data: Data;
+}
+
+function ContentForm({ data }: ContentFormProp) {
   const router = useRouter();
   const [preview, setPreview] = useState<string | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -37,10 +42,10 @@ function ContentForm({ title = "", thumbnail = "", content = "" }: Data) {
   const form = useForm<z.infer<typeof contentSchema>>({
     resolver: zodResolver(contentSchema),
     defaultValues: {
-      title,
-      thumbnail,
-      content,
-      tags: [],
+      title: data?.title || "",
+      thumbnail: data?.thumbnail || "",
+      content: data?.content || "",
+      tags: data?.tags || [],
     },
   });
 
@@ -115,10 +120,10 @@ function ContentForm({ title = "", thumbnail = "", content = "" }: Data) {
                 <FormItem className=" rounded-xl p-4">
                   <FormControl>
                     <div className="space-y-4 flex flex-col justify-center items-center">
-                      {preview ? (
+                      {data?.thumbnail || preview ? (
                         <div className="h-40 w-full overflow-hidden rounded-lg shadow-sm">
                           <img
-                            src={preview}
+                            src={preview || data?.thumbnail}
                             alt="Preview"
                             className="object-cover w-full h-full "
                           />
@@ -153,7 +158,7 @@ function ContentForm({ title = "", thumbnail = "", content = "" }: Data) {
                   <MultiSelect
                     options={category}
                     onValueChange={(tags) => {
-                      setSelectedTags(tags);
+                      // setSelectedTags(tags);
                       field.onChange(tags);
                     }}
                     defaultValue={field.value}

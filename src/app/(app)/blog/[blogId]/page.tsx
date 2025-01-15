@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 function ViewBlog() {
   const { blogId } = useParams();
@@ -96,9 +97,11 @@ function ViewBlog() {
             </div>
             <div>
               {currentUser.data?.user?.id == blog.author && (
-                <Button variant="outline" size="sm" className="ml-2">
-                  Edit
-                </Button>
+                <Link href={`/blog/edit/${blogId}`}>
+                  <Button variant="outline" size="sm" className="ml-2">
+                    Edit
+                  </Button>
+                </Link>
               )}
             </div>
           </div>
