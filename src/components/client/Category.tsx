@@ -10,27 +10,18 @@ function Category() {
       <CardHeader className=" text-xl font-semibold">
         Search by category
       </CardHeader>
-      <CardContent >
-        <ScrollArea className="h-[400px]">
-          <div className="space-y-6">
-            {category.map((item, index) => (
-              <div key={index} className="rounded-lg border p-4 shadow-sm">
-                <h3 className="mb-3 text-base font-semibold">{item.name}</h3>
-                <div className="flex flex-wrap gap-2">
-                  {item.subcategories.map((el, index) => (
-                    <Badge
-                      variant="outline"
-                      key={index}
-                      className="hover:bg-primary/10 transition-colors cursor-pointer"
-                    >
-                      {el}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
+      <CardContent>
+        <div className="space-y-2 space-x-1">
+          {category.map((item, index) => (
+            <Badge
+              variant="outline"
+              key={index}
+              className="hover:bg-primary/10 transition-colors cursor-pointer"
+            >
+              {item.label}
+            </Badge>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );

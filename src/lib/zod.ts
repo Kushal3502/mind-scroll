@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { string, z } from "zod";
 
 export const signUpSchema = z.object({
   username: z.string().min(2, "Username must contains atleast 2 characters"),
@@ -21,5 +21,6 @@ export const contentSchema = z.object({
     .string()
     .url("Please provide a valid URL for the thumbnail")
     .trim(),
+  tags: z.array(z.string()).min(1, "Please add at least one tag"),
   content: z.any(),
 });

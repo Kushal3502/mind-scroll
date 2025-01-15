@@ -19,9 +19,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { title, thumbnail, content } = await request.json();
+  const { title, thumbnail, content, tags } = await request.json();
 
-  if (!title || !content || !author) {
+  if (!title || !content || !author || !tags) {
     return NextResponse.json(
       {
         success: false,
@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
       data: {
         content,
         title,
+        tags,
         author,
         thumbnail,
       },

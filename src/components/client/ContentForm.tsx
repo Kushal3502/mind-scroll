@@ -20,6 +20,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { MultiSelect } from "./MultiSelect";
+import category from "@/category.json";
 
 interface Data {
   title?: string;
@@ -30,6 +32,7 @@ interface Data {
 function ContentForm({ title = "", thumbnail = "", content = "" }: Data) {
   const router = useRouter();
   const [preview, setPreview] = useState<string | null>(null);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const form = useForm<z.infer<typeof contentSchema>>({
     resolver: zodResolver(contentSchema),
@@ -37,6 +40,7 @@ function ContentForm({ title = "", thumbnail = "", content = "" }: Data) {
       title,
       thumbnail,
       content,
+      tags: [],
     },
   });
 
@@ -67,6 +71,7 @@ function ContentForm({ title = "", thumbnail = "", content = "" }: Data) {
             title: values.title,
             thumbnail: String(uploadResponse.data.response.secure_url),
             content: values.content,
+            tags: values.tags,
           });
 
           toast.success(response.data.message);
@@ -86,71 +91,96 @@ function ContentForm({ title = "", thumbnail = "", content = "" }: Data) {
         className="space-y-8 max-w-7xl mx-auto px-4"
       >
         <div className=" flex flex-col gap-4">
-        <div className="grid md:grid-cols-3 grid-cols-1 gap-6 mb-6">
+          <div className="grid md:grid-cols-3 grid-cols-1 gap-6 mb-6">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormControl>
+                    <Input
+                      placeholder="Write an engaging title..."
+                      {...field}
+                      className="h-full text-2xl md:text-3xl lg:text-4xl font-semibold border-none focus:border-none focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 transition-colors duration-200 placeholder:text-gray-400"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-500" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="thumbnail"
+              render={({ field }) => (
+                <FormItem className=" rounded-xl p-4">
+                  <FormControl>
+                    <div className="space-y-4 flex flex-col justify-center items-center">
+                      {preview ? (
+                        <div className="h-40 w-full overflow-hidden rounded-lg shadow-sm">
+                          <img
+                            src={preview}
+                            alt="Preview"
+                            className="object-cover w-full h-full "
+                          />
+                        </div>
+                      ) : (
+                        <div className="h-40 w-full  border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+                          <Upload className="h-8 w-8 text-gray-400" />
+                        </div>
+                      )}
+                      <Input
+                        placeholder="Upload thumbnail"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          field.onChange(e);
+                          handleImagePreview(e);
+                        }}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage className="text-red-500" />
+                </FormItem>
+              )}
+            />
+          </div>
           <FormField
             control={form.control}
-            name="title"
+            name="tags"
             render={({ field }) => (
-              <FormItem className="md:col-span-2">
+              <FormItem>
                 <FormControl>
-                  <Input
-                    placeholder="Write an engaging title..."
-                    {...field}
-                    className="h-full text-2xl md:text-3xl lg:text-4xl font-semibold border-none focus:border-none focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 transition-colors duration-200 placeholder:text-gray-400"
+                  <MultiSelect
+                    options={category}
+                    onValueChange={(tags) => {
+                      setSelectedTags(tags);
+                      field.onChange(tags);
+                    }}
+                    defaultValue={field.value}
+                    placeholder="Select upto 5 tags"
+                    variant="inverted"
+                    maxCount={5}
                   />
                 </FormControl>
-                <FormMessage className="text-red-500" />
+                <FormMessage className="text-red-500 px-4 pb-4" />
               </FormItem>
             )}
           />
           <FormField
             control={form.control}
-            name="thumbnail"
+            name="content"
             render={({ field }) => (
-              <FormItem className=" rounded-xl p-4">
+              <FormItem>
                 <FormControl>
-                  <div className="space-y-4 flex flex-col justify-center items-center">
-                    {preview ? (
-                      <div className="h-40 w-full overflow-hidden rounded-lg shadow-sm">
-                        <img
-                          src={preview}
-                          alt="Preview"
-                          className="object-cover w-full h-full "
-                        />
-                      </div>
-                    ) : (
-                      <div className="h-40 w-full  border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
-                        <Upload className="h-8 w-8 text-gray-400" />
-                      </div>
-                    )}
-                    <Input
-                      placeholder="Upload thumbnail"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        field.onChange(e);
-                        handleImagePreview(e);
-                      }}
-                    />
-                  </div>
+                  <Editor
+                    onChange={field.onChange}
+                    initialValue={field.value}
+                  />
                 </FormControl>
-                <FormMessage className="text-red-500" />
+                <FormMessage className="text-red-500 px-4 pb-4" />
               </FormItem>
             )}
           />
-        </div>
-        <FormField
-          control={form.control}
-          name="content"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Editor onChange={field.onChange} initialValue={field.value} />
-              </FormControl>
-              <FormMessage className="text-red-500 px-4 pb-4" />
-            </FormItem>
-          )}
-        />
         </div>
         <Button
           type="submit"
