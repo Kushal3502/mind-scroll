@@ -34,14 +34,14 @@ function BlogCard({ blog }: BlogCardProps) {
 
   return (
     <Link href={`/blog/${blog.id}`}>
-      <Card className=" w-full flex justify-around items-center mb-4 hover:shadow-md">
+      <Card className=" w-full flex items-center mb-4 hover:shadow-md">
         <CardHeader className="md:p-4 p-2">
           <Image
             src={blog.thumbnail}
             alt="thumbnail"
             height={150}
             width={300}
-            className="w-full md:h-40 h-24 object-cover rounded-lg "
+            className="w-40 md:h-40 h-24 object-cover rounded-lg "
           />
         </CardHeader>
         <div className="">

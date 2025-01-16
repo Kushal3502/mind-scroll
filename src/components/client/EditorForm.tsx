@@ -1,49 +1,42 @@
 "use client";
 
-import category from "@/category.json";
-import { Editor } from "@/components/client/Editor";
-import { Button } from "@/components/ui/button";
+import React from "react";
+import { UseFormReturn } from "react-hook-form";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { contentSchema } from "@/lib/zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
-import { Loader2, Upload } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+} from "../ui/form";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Upload, Loader2 } from "lucide-react";
+import category from "@/category.json";
 import { MultiSelect } from "./MultiSelect";
+import { Editor } from "./Editor";
 
-interface ContentFormProp {
+interface EditorFormProps {
+  form: UseFormReturn<any>;
   data?: {
-    title?: string;
-    thumbnail?: string;
-    content?: string;
-    tags?: string[];
+    title: string;
+    thumbnail: string;
+    content: string;
+    tags: string[];
   };
+  onSubmit: (data: any) => Promise<void>;
+  buttonText: string;
+  isEditing?: boolean;
 }
 
-function ContentForm({ data }: ContentFormProp) {
-  const router = useRouter();
-  const [preview, setPreview] = useState<string | null>(null);
-
-  const form = useForm<z.infer<typeof contentSchema>>({
-    resolver: zodResolver(contentSchema),
-    defaultValues: {
-      title: data?.title || "",
-      thumbnail: data?.thumbnail || "",
-      content: data?.content || "",
-      tags: data?.tags || [],
-    },
-  });
+function EditorForm({
+  form,
+  data,
+  onSubmit,
+  buttonText,
+  isEditing,
+}: EditorFormProps) {
+  const [preview, setPreview] = React.useState<string>("");
 
   const handleImagePreview = (e: any) => {
     const file = e.target.files[0];
@@ -52,46 +45,13 @@ function ContentForm({ data }: ContentFormProp) {
     }
   };
 
-  async function onSubmit(values: z.infer<typeof contentSchema>) {
-    console.log(values);
-
-    try {
-      const fileInput = document.querySelector(
-        'input[type="file"]'
-      ) as HTMLInputElement;
-      const file = fileInput?.files?.[0];
-
-      if (file) {
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const uploadResponse = await axios.post("/api/image-upload", formData);
-
-        if (uploadResponse.data.success) {
-          const response = await axios.post("/api/blog/add", {
-            title: values.title,
-            thumbnail: String(uploadResponse.data.response.secure_url),
-            content: values.content,
-            tags: values.tags,
-          });
-
-          toast.success(response.data.message);
-
-          router.push("/home");
-        }
-      }
-    } catch (error) {
-      toast.error("Something went wrong");
-    }
-  }
-
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-8 max-w-7xl mx-auto px-4"
       >
-        <div className=" flex flex-col gap-4">
+        <div className="flex flex-col gap-4">
           <div className="grid md:grid-cols-3 grid-cols-1 gap-6 mb-6">
             <FormField
               control={form.control}
@@ -103,6 +63,7 @@ function ContentForm({ data }: ContentFormProp) {
                       placeholder="Write an engaging title..."
                       {...field}
                       className="h-full text-2xl md:text-3xl lg:text-4xl font-semibold border-none focus:border-none focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 transition-colors duration-200 placeholder:text-gray-400"
+                      value={data?.title}
                     />
                   </FormControl>
                   <FormMessage className="text-red-500" />
@@ -112,8 +73,9 @@ function ContentForm({ data }: ContentFormProp) {
             <FormField
               control={form.control}
               name="thumbnail"
+              defaultValue={data?.thumbnail || ""}
               render={({ field }) => (
-                <FormItem className=" rounded-xl p-4">
+                <FormItem className="rounded-xl p-4">
                   <FormControl>
                     <div className="space-y-4 flex flex-col justify-center items-center">
                       {data?.thumbnail || preview ? (
@@ -121,11 +83,11 @@ function ContentForm({ data }: ContentFormProp) {
                           <img
                             src={preview || data?.thumbnail}
                             alt="Preview"
-                            className="object-cover w-full h-full "
+                            className="object-cover w-full h-full"
                           />
                         </div>
                       ) : (
-                        <div className="h-40 w-full  border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+                        <div className="h-40 w-full border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
                           <Upload className="h-8 w-8 text-gray-400" />
                         </div>
                       )}
@@ -148,15 +110,13 @@ function ContentForm({ data }: ContentFormProp) {
           <FormField
             control={form.control}
             name="tags"
+            defaultValue={data?.tags || []}
             render={({ field }) => (
               <FormItem>
                 <FormControl>
                   <MultiSelect
                     options={category}
-                    onValueChange={(tags) => {
-                      // setSelectedTags(tags);
-                      field.onChange(tags);
-                    }}
+                    onValueChange={field.onChange}
                     defaultValue={field.value}
                     placeholder="Select upto 5 tags"
                     variant="inverted"
@@ -175,7 +135,7 @@ function ContentForm({ data }: ContentFormProp) {
                 <FormControl>
                   <Editor
                     onChange={field.onChange}
-                    initialValue={field.value}
+                    initialValue={data?.content || ""}
                   />
                 </FormControl>
                 <FormMessage className="text-red-500 px-4 pb-4" />
@@ -185,16 +145,16 @@ function ContentForm({ data }: ContentFormProp) {
         </div>
         <Button
           type="submit"
-          className="w-full "
+          className="w-full"
           disabled={form.formState.isSubmitting}
         >
           {form.formState.isSubmitting ? (
             <>
               <Loader2 className="h-5 w-5 animate-spin" />
-              <span>Publishing...</span>
+              <span>{isEditing ? "Updating..." : "Publishing..."}</span>
             </>
           ) : (
-            <span>Publish Blog</span>
+            <span>{buttonText}</span>
           )}
         </Button>
       </form>
@@ -202,4 +162,4 @@ function ContentForm({ data }: ContentFormProp) {
   );
 }
 
-export default ContentForm;
+export default EditorForm;
