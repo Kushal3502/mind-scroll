@@ -58,7 +58,7 @@ function Blogs() {
     const pageNumbers = [];
     for (let i = 1; i <= pages; i++) {
       pageNumbers.push(
-        <PaginationItem key={i}>
+        <PaginationItem key={i} className=" cursor-pointer">
           <PaginationLink
             onClick={() => setCurrPage(i)}
             isActive={currPage === i}
@@ -83,19 +83,29 @@ function Blogs() {
           <TrendingUp className=" h-8 w-8" />
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className=" grid grid-cols-1 gap-2">
         {blogs && blogs.map((item) => <BlogCard blog={item} key={item.id} />)}
       </CardContent>
       <CardFooter>
-        {totalBlogs && totalBlogs > 10 && (
+        {totalBlogs && totalBlogs > 5 && (
           <Pagination>
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious onClick={handlePrevious} />
+                <PaginationPrevious
+                  onClick={handlePrevious}
+                  className={`${
+                    currPage == 1 ? "cursor-not-allowed" : "cursor-pointer"
+                  }`}
+                />
               </PaginationItem>
               {renderPageNumbers()}
               <PaginationItem>
-                <PaginationNext onClick={handleNext} />
+                <PaginationNext
+                  onClick={handleNext}
+                  className={`${
+                    currPage == pages ? "cursor-not-allowed" : "cursor-pointer"
+                  }`}
+                />
               </PaginationItem>
             </PaginationContent>
           </Pagination>

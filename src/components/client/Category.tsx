@@ -1,8 +1,6 @@
-import React from "react";
 import category from "@/category.json";
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardHeader } from "../ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 function Category() {
   return (

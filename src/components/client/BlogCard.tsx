@@ -34,45 +34,54 @@ function BlogCard({ blog }: BlogCardProps) {
 
   return (
     <Link href={`/blog/${blog.id}`}>
-      <Card className=" w-full flex items-center mb-4 hover:shadow-md">
-        <CardHeader className="md:p-4 p-2">
-          <Image
-            src={blog.thumbnail}
-            alt="thumbnail"
-            height={150}
-            width={300}
-            className="w-40 md:h-40 h-24 object-cover rounded-lg "
-          />
-        </CardHeader>
-        <div className="">
-          <CardContent className="space-y-2 p-4 flex flex-col">
-            <h2 className="md:text-lg text-sm font-bold text-justify">{blog.title}</h2>
-            <div className=" flex flex-wrap gap-2">
-              {blog.tags.map((item, index) => (
-                <Badge key={index}>
-                  {item}
-                </Badge>
-              ))}
+      <Card className=" w-full hover:shadow-xl ">
+        <div className="flex flex-col md:flex-row">
+          <CardHeader className="p-3 md:p-4 lg:p-5">
+            <div className="relative overflow-hidden rounded-lg">
+              <Image
+                src={blog.thumbnail}
+                alt={blog.title}
+                height={200}
+                width={300}
+                className="w-full md:w-48 lg:w-64 h-48 object-cover "
+                priority
+              />
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <span className="font-medium">
+          </CardHeader>
+
+          <div className="flex flex-col justify-around flex-1 p-3 md:p-4">
+            <CardContent className="space-y-3 p-0">
+              <h2 className="text-lg md:text-xl font-bold line-clamp-2 ">
+                {blog.title}
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {blog.tags.map((item, index) => (
+                  <Badge key={index}>{item}</Badge>
+                ))}
+              </div>
+              <p className="text-sm ">
                 {new Date(blog.createdAt).toLocaleDateString("en-US", {
-                  month: "short",
+                  month: "long",
                   day: "numeric",
                   year: "numeric",
                 })}
-              </span>
-            </div>
-          </CardContent>
-          <CardFooter className="flex items-center gap-3 text-left">
-            <Avatar className="h-8 w-8">
-              <AvatarImage
-                src={user?.image || "https://github.com/shadcn.png"}
-              />
-              <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <span className="text-sm ">{user?.name}</span>
-          </CardFooter>
+              </p>
+            </CardContent>
+            <CardFooter className="p-0 mt-4">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-10 w-10 ">
+                  <AvatarImage
+                    src={user?.image || "https://github.com/shadcn.png"}
+                    alt={user?.name || "User"}
+                  />
+                  <AvatarFallback className="">
+                    {user?.name?.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="font-medium text-sm ">{user?.name}</span>
+              </div>
+            </CardFooter>
+          </div>
         </div>
       </Card>
     </Link>
