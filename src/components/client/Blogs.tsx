@@ -26,7 +26,6 @@ export interface Blog {
 
 function Blogs() {
   const [blogs, setBlogs] = useState<Blog[] | null>();
-  const [totalBlogs, setTotalBlogs] = useState();
   const [pages, setPages] = useState();
   const [currPage, setCurrPage] = useState(1);
 
@@ -36,7 +35,6 @@ function Blogs() {
     if (response.data.success) {
       setBlogs(response.data.blogs);
       setPages(response.data.totalPages);
-      setTotalBlogs(response.data.totalBlogs);
     }
   }
 
@@ -87,7 +85,7 @@ function Blogs() {
         {blogs && blogs.map((item) => <BlogCard blog={item} key={item.id} />)}
       </CardContent>
       <CardFooter>
-        {totalBlogs && totalBlogs > 5 && (
+        {pages && pages > 1 ? (
           <Pagination>
             <PaginationContent>
               <PaginationItem>
@@ -109,7 +107,7 @@ function Blogs() {
               </PaginationItem>
             </PaginationContent>
           </Pagination>
-        )}
+        ) : null}
       </CardFooter>
     </Card>
   );

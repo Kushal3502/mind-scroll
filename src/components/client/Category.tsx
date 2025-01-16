@@ -1,6 +1,7 @@
 import category from "@/category.json";
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardHeader } from "../ui/card";
+import Link from "next/link";
 
 function Category() {
   return (
@@ -9,15 +10,16 @@ function Category() {
         Search by category
       </CardHeader>
       <CardContent>
-        <div className="space-y-2 space-x-1">
+        <div className="flex flex-wrap gap-2">
           {category.map((item, index) => (
-            <Badge
-              variant="outline"
-              key={index}
-              className="hover:bg-primary/10 transition-colors cursor-pointer"
-            >
-              {item.label}
-            </Badge>
+            <Link key={index} href={`/blog/category/${item.value}`}>
+              <Badge
+                variant="outline"
+                className="hover:bg-primary/10 transition-colors cursor-pointer"
+              >
+                {item.label}
+              </Badge>
+            </Link>
           ))}
         </div>
       </CardContent>

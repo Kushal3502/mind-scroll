@@ -7,30 +7,32 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
 
     const query = searchParams.get("query") ?? "";
-    const tags = searchParams.get("tags") ?? "";
+    const tag = searchParams.get("tag") ?? "";
     const page = parseInt(searchParams.get("page") ?? "1");
     const limit = parseInt(searchParams.get("limit") ?? "5");
 
     const skip = (page - 1) * limit;
 
+    let whereClause = {};
+
+    if (query) {
+      whereClause = {
+        title: {
+          contains: query,
+          mode: "insensitive",
+        },
+      };
+    } else if (tag) {
+      whereClause = {
+        tags: {
+          has: tag,
+        },
+      };
+    }
+
     // get paginated result
     const blogs = await prisma.blog.findMany({
-      where: {
-        OR: [
-          {
-            title: {
-              contains: query,
-              mode: "insensitive",
-            },
-          },
-          //   {
-          //     tags: {
-          //         contains: tags,
-          //         mode: "insensitive",
-          //       },
-          //   },
-        ],
-      },
+      where: whereClause,
       skip,
       take: limit,
       orderBy: {
@@ -45,7 +47,6 @@ export async function GET(request: NextRequest) {
       {
         success: true,
         blogs,
-        totalBlogs,
         page,
         totalPages: Math.ceil(totalBlogs / limit),
       },
