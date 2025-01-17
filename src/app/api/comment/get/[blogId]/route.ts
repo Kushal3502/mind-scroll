@@ -12,14 +12,6 @@ export async function GET(
   try {
     const blog = await prisma.blog.findUnique({
       where: { id: blogId },
-      include: {
-        user: {
-          select: {
-            name: true,
-            image: true,
-          },
-        },
-      },
     });
 
     // if blog not found
@@ -35,21 +27,34 @@ export async function GET(
       );
     }
 
+    const comments = await prisma.comment.findMany({
+      where: { blogId },
+      include: {
+        user: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
+      },
+    });
+
     return NextResponse.json(
       {
         success: true,
-        message: "Blog fetched successfully",
-        blog,
+        message: "Comment fetched successfully",
+        comments,
       },
       {
         status: 200,
       }
     );
   } catch (error) {
+    console.log("Comment fetch error :: ", error);
     return NextResponse.json(
       {
         success: false,
-        message: "Something went wrong",
+        message: "Error fetching comment",
       },
       {
         status: 500,

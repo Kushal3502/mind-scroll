@@ -56,6 +56,7 @@ function EditorForm({
             <FormField
               control={form.control}
               name="title"
+              defaultValue={data?.title}
               render={({ field }) => (
                 <FormItem className="md:col-span-2">
                   <FormControl>
@@ -63,7 +64,6 @@ function EditorForm({
                       placeholder="Write an engaging title..."
                       {...field}
                       className="h-full text-2xl md:text-3xl lg:text-4xl font-semibold border-none focus:border-none focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 transition-colors duration-200 placeholder:text-gray-400"
-                      value={data?.title}
                     />
                   </FormControl>
                   <FormMessage className="text-red-500" />

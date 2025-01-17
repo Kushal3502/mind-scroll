@@ -41,12 +41,15 @@ export async function GET(request: NextRequest) {
     });
 
     // get total number of blogs
-    const totalBlogs = await prisma.blog.count();
+    const totalBlogs = await prisma.blog.count({
+      where: whereClause,
+    });
 
     return NextResponse.json(
       {
         success: true,
         blogs,
+        totalBlogs,
         page,
         totalPages: Math.ceil(totalBlogs / limit),
       },

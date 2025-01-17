@@ -16,7 +16,8 @@ export async function middleware(request: NextRequest) {
     !user &&
     (url.pathname.startsWith("/dashboard") ||
       url.pathname.startsWith("/favourites") ||
-      url.pathname.startsWith("/blogs"))
+      url.pathname.startsWith("/blog/add") ||
+      url.pathname.startsWith("/blog/edit"))
   ) {
     return NextResponse.redirect(new URL("/signin", request.url));
   }

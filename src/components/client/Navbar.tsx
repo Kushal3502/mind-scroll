@@ -10,7 +10,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Heart,
   House,
   LayoutDashboard,
   LogOut,
@@ -20,10 +19,10 @@ import {
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
-import Link from "next/link";
-import { Button } from "../ui/button";
 import Image from "next/image";
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Button } from "../ui/button";
 
 const navbarItems = [
   {
@@ -36,11 +35,6 @@ const navbarItems = [
     icon: <Pencil />,
     path: "/blog/add",
   },
-  // {
-  //   name: "Favourites",
-  //   icon: <Heart />,
-  //   path: "/blogs/favourites",
-  // },
   {
     name: "Dashboard",
     icon: <LayoutDashboard />,
