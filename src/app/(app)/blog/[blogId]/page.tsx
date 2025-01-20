@@ -2,7 +2,7 @@
 
 import { Blog } from "@/components/client/Blogs";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import parse from "html-react-parser";
@@ -30,8 +30,9 @@ function ViewBlog() {
   const [isLoading, setIsLoading] = useState(true);
 
   const currentUser = useSession();
+  const router = useRouter();
 
-  async function fetchBlogAndComments() {
+  async function fetchBlogDetails() {
     try {
       setIsLoading(true);
       const response = await axios.get(`/api/blog/get/${blogId}`);
@@ -40,11 +41,14 @@ function ViewBlog() {
       if (response.data.success) {
         setBlog(response.data.blog);
         setUser(response.data.blog.user);
-        const blogComments = await axios.get(`/api/comment/get/${blogId}`);
+        setComments(response.data.blog.comments);
+        setLikeCount(response.data.blog.likes.length);
 
-        if (blogComments.data.success) {
-          setComments(blogComments.data.comments);
-        }
+        const likeStatus = response.data.blog.likes.some(
+          (item: any) => item.id == currentUser.data?.user?.id
+        );
+
+        setIsLiked(likeStatus);
       } else {
         toast.error(response.data.message);
       }
@@ -55,8 +59,35 @@ function ViewBlog() {
     }
   }
 
+  async function handleLike() {
+    if (currentUser.status !== "authenticated") {
+      router.push("/signin");
+      return;
+    }
+
+    try {
+      const response = await axios.post(`/api/like/${blogId}`);
+
+      if (response.data.success) {
+        if (isLiked) {
+          setIsLiked(false);
+          setLikeCount(likeCount - 1);
+          toast.success(response.data.message);
+        } else {
+          setIsLiked(true);
+          setLikeCount(likeCount + 1);
+          toast.success(response.data.message);
+        }
+        router.refresh();
+      }
+    } catch (error) {
+      toast.error("Failed to send comment");
+      console.error("Comment submission error:", error);
+    }
+  }
+
   useEffect(() => {
-    fetchBlogAndComments();
+    fetchBlogDetails();
   }, [blogId]);
 
   if (isLoading) {
@@ -94,10 +125,7 @@ function ViewBlog() {
                 <span>{user?.name}</span>
               </div>
               <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                >
+                <Button variant="ghost" size="sm" onClick={handleLike}>
                   <Heart
                     className="size-5 text-red-500 transition-all"
                     fill={isLiked ? "#ef4444" : "transparent"}

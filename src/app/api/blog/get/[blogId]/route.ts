@@ -19,6 +19,25 @@ export async function GET(
             image: true,
           },
         },
+        likes: {
+          include: {
+            user: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        },
+        comments: {
+          include: {
+            user: {
+              select: {
+                name: true,
+                image: true,
+              },
+            },
+          },
+        },
       },
     });
 
