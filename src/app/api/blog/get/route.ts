@@ -36,7 +36,9 @@ export async function GET(request: NextRequest) {
       skip,
       take: limit,
       orderBy: {
-        createdAt: "desc",
+        likes: {
+          _count: "desc",
+        },
       },
     });
 
