@@ -21,8 +21,6 @@ function AddComment({ blogId }: { blogId: string }) {
     }
 
     try {
-      console.log("click");
-
       if (blogId && message.trim()) {
         const response = await axios.post(`/api/comment/add/${blogId}`, {
           content: message,

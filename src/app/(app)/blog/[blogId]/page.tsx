@@ -10,7 +10,7 @@ import Image from "next/image";
 import { User } from "@/components/client/BlogCard";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2 } from "lucide-react";
+import { Heart, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -25,6 +25,8 @@ function ViewBlog() {
   const [blog, setBlog] = useState<BlogDetails>();
   const [comments, setComments] = useState([]);
   const [user, setUser] = useState<User | null>();
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   const currentUser = useSession();
@@ -90,6 +92,19 @@ function ViewBlog() {
                   <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <span>{user?.name}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                >
+                  <Heart
+                    className="size-5 text-red-500 transition-all"
+                    fill={isLiked ? "#ef4444" : "transparent"}
+                    stroke={isLiked ? "#ef4444" : "currentColor"}
+                  />
+                </Button>
+                <span className="text-sm font-medium">{likeCount} likes</span>
               </div>
               <div>
                 {currentUser.data?.user?.id == blog.author && (

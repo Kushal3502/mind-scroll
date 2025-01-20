@@ -48,7 +48,6 @@ function BlogCard({ blog }: BlogCardProps) {
               />
             </div>
           </CardHeader>
-
           <div className="flex flex-col justify-around flex-1 p-3 md:p-4">
             <CardContent className="space-y-3 p-0">
               <h2 className="text-lg md:text-xl font-bold line-clamp-2 ">
