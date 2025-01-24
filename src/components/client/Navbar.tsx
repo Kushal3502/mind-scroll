@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Edit3,
   House,
   LayoutDashboard,
   LogOut,
@@ -50,6 +51,7 @@ function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-3xl bg-background/60 flex justify-between items-center md:px-14 px-6 py-4">
       <Link href={"/"} className="flex items-center space-x-3">
         <h1 className="md:text-3xl text-xl font-semibold">MindScroll</h1>
+        <Edit3 />
       </Link>
       <div className="flex items-center gap-4">
         <div className="md:flex items-center gap-2 hidden">

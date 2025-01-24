@@ -56,7 +56,7 @@ function LoginForm() {
       console.log(response);
 
       if (response?.success) {
-        router.push("/");
+        router.push("/home");
 
         return toast.success(response?.message, {
           id: toastId,

@@ -9,7 +9,7 @@ export async function middleware(request: NextRequest) {
     user &&
     (url.pathname.startsWith("/signin") || url.pathname.startsWith("/signup"))
   ) {
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.redirect(new URL("/home", request.url));
   }
 
   if (

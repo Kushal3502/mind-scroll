@@ -50,7 +50,7 @@ export async function handleCredentialSignIn({
 }
 
 export async function googleSignIn() {
-  await signIn("google");
+  await signIn("google", { redirectTo: "/home" });
 }
 
 export async function handleSignOut() {

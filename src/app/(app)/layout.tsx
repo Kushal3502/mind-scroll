@@ -1,3 +1,4 @@
+import Footer from "@/components/client/Footer";
 import Navbar from "@/components/client/Navbar";
 
 interface RootLayoutProps {
@@ -11,6 +12,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <main className="flex-1 mx-auto container max-w-screen-xl mt-14 px-4 py-8">
         {children}
       </main>
+      <Footer />
     </div>
   );
 }
