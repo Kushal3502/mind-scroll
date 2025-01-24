@@ -14,6 +14,18 @@ export async function GET(
       where: {
         id: userId,
       },
+      include: {
+        blogs: {
+          orderBy: {
+            likes: {
+              _count: "desc",
+            },
+          },
+        },
+        likes: {
+          
+        }
+      },
     });
 
     // if user not found

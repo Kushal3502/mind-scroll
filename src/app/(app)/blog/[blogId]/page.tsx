@@ -1,13 +1,11 @@
 "use client";
 
-import { Blog } from "@/components/client/Blogs";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import parse from "html-react-parser";
 import Image from "next/image";
-import { User } from "@/components/client/BlogCard";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Heart, Loader2 } from "lucide-react";
@@ -15,21 +13,18 @@ import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import AddComment from "@/components/client/AddComment";
-
-interface BlogDetails extends Blog {
-  user: User;
-}
+import { Blog, User } from "@prisma/client";
 
 function ViewBlog() {
   const { blogId } = useParams();
-  const [blog, setBlog] = useState<BlogDetails>();
+  const [blog, setBlog] = useState<Blog>();
   const [comments, setComments] = useState([]);
   const [user, setUser] = useState<User | null>();
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  const currentUser = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   async function fetchBlogDetails() {
@@ -44,11 +39,13 @@ function ViewBlog() {
         setComments(response.data.blog.comments);
         setLikeCount(response.data.blog.likes.length);
 
-        const likeStatus = response.data.blog.likes.some(
-          (item: any) => item.id == currentUser.data?.user?.id
-        );
+        if (session?.user?.id) {
+          const likeStatus = response.data.blog.likes.some(
+            (like: any) => like.userId === session.user?.id
+          );
 
-        setIsLiked(likeStatus);
+          setIsLiked(likeStatus);
+        }
       } else {
         toast.error(response.data.message);
       }
@@ -60,7 +57,7 @@ function ViewBlog() {
   }
 
   async function handleLike() {
-    if (currentUser.status !== "authenticated") {
+    if (status !== "authenticated") {
       router.push("/signin");
       return;
     }
@@ -81,8 +78,8 @@ function ViewBlog() {
         router.refresh();
       }
     } catch (error) {
-      toast.error("Failed to send comment");
-      console.error("Comment submission error:", error);
+      toast.error("Failed to like blog");
+      console.error("Blog like error:", error);
     }
   }
 
@@ -135,7 +132,7 @@ function ViewBlog() {
                 <span className="text-sm font-medium">{likeCount} likes</span>
               </div>
               <div>
-                {currentUser.data?.user?.id == blog.author && (
+                {session?.user?.id == blog.author && (
                   <Link href={`/blog/edit/${blogId}`}>
                     <Button variant="outline" size="sm" className="ml-2">
                       Edit

@@ -13,16 +13,17 @@ import { TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import BlogCard from "./BlogCard";
+import { Blog } from "@prisma/client";
 
-export interface Blog {
-  id: string;
-  title: string;
-  thumbnail: string;
-  content: string;
-  tags: string[];
-  author: string;
-  createdAt: Date;
-}
+// export interface Blog {
+//   id: string;
+//   title: string;
+//   thumbnail: string;
+//   content: string;
+//   tags: string[];
+//   author: string;
+//   createdAt: Date;
+// }
 
 function Blogs() {
   const [blogs, setBlogs] = useState<Blog[] | null>();
