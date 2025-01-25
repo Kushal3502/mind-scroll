@@ -1,20 +1,28 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Blog, User } from "@prisma/client";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import axios from "axios";
-import BlogCard from "./BlogCard";
-import { Button } from "../ui/button";
-import { Plus } from "lucide-react";
+import { Eye, Pencil, Plus, Trash } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { toast } from "sonner";
 
 export default function Dashboard() {
   const { data: session } = useSession();
   const [userData, setUserData] = useState<User | null>(null);
-  const [blogs, setBlogs] = useState<Blog[] | null>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
 
   async function fetchUserData() {
     if (session?.user?.id) {
@@ -22,7 +30,19 @@ export default function Dashboard() {
       if (response.data.success) {
         setUserData(response.data.user);
         setBlogs(response.data.user.blogs);
+        console.log(response);
       }
+    }
+  }
+
+  async function handleDelete(blogId: string) {
+    const response = await axios.delete(`/api/blog/delete/${blogId}`);
+
+    if (response.data.success) {
+      setBlogs((prev) => prev.filter((item) => item.id !== blogId));
+      toast.success(response.data.message);
+    } else {
+      toast.error("Failed to delete blog");
     }
   }
 
@@ -80,22 +100,70 @@ export default function Dashboard() {
           </Card>
           <Card className="md:col-span-2">
             <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
+              <CardTitle>Recent Blogs</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 {blogs && blogs.length > 0 ? (
-                  <div className=" grid grid-cols-1 gap-2">
-                    {blogs &&
-                      blogs.map((item) => (
-                        <BlogCard blog={item} key={item.id} />
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Thumbnail</TableHead>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Published</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {blogs.map((item) => (
+                        <TableRow key={item.id}>
+                          <TableCell>
+                            <Avatar className="h-10 w-10 object-cover">
+                              <AvatarImage src={item.thumbnail || " "} />
+                              <AvatarFallback>I</AvatarFallback>
+                            </Avatar>
+                          </TableCell>
+                          <TableCell>{item.title}</TableCell>
+                          <TableCell>
+                            <time>
+                              {new Date(item.createdAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                }
+                              )}
+                            </time>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Link href={`/blog/${item.id}`}>
+                              <Button size={"sm"} variant={"outline"}>
+                                <Eye />
+                              </Button>
+                            </Link>
+                            <Link href={`/blog/edit/${item.id}`}>
+                              <Button size={"sm"} variant={"outline"}>
+                                <Pencil />
+                              </Button>
+                            </Link>
+                            <Button
+                              size={"sm"}
+                              variant={"outline"}
+                              onClick={() => handleDelete(item.id)}
+                            >
+                              <Trash />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
                       ))}
-                  </div>
+                    </TableBody>
+                  </Table>
                 ) : (
                   <div className=" flex flex-col justify-center items-center gap-3">
                     <p className="text-gray-600">No recent activity</p>
                     <Link href={"/blog/add"}>
-                      <Button size={"sm"} variant={"outline"}>
+                      <Button size={"sm"}>
                         Add blog <Plus />
                       </Button>
                     </Link>

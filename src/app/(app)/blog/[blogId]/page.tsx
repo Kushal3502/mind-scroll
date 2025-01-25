@@ -14,11 +14,13 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import AddComment from "@/components/client/AddComment";
 import { Blog, User } from "@prisma/client";
+import { Textarea } from "@/components/ui/textarea";
 
 function ViewBlog() {
   const { blogId } = useParams();
   const [blog, setBlog] = useState<Blog>();
   const [comments, setComments] = useState([]);
+  const [message, setMessage] = useState("");
   const [user, setUser] = useState<User | null>();
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -38,11 +40,13 @@ function ViewBlog() {
         setUser(response.data.blog.user);
         setComments(response.data.blog.comments);
         setLikeCount(response.data.blog.likes.length);
+        console.log(session);
 
         if (session?.user?.id) {
           const likeStatus = response.data.blog.likes.some(
             (like: any) => like.userId === session.user?.id
           );
+          console.log(likeStatus);
 
           setIsLiked(likeStatus);
         }
@@ -53,6 +57,17 @@ function ViewBlog() {
       toast.error("Failed to fetch blog");
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function fetchComments() {
+    try {
+      const response = await axios.get(`/api/comment/get/${blogId}`);
+      if (response.data.success) {
+        setComments(response.data.comments);
+      }
+    } catch (error) {
+      console.error("Comments fetch error:", error);
     }
   }
 
@@ -75,11 +90,36 @@ function ViewBlog() {
           setLikeCount(likeCount + 1);
           toast.success(response.data.message);
         }
-        router.refresh();
       }
     } catch (error) {
       toast.error("Failed to like blog");
       console.error("Blog like error:", error);
+    }
+  }
+
+  async function handleSendMessage() {
+    if (status !== "authenticated") {
+      router.push("/signin");
+      return;
+    }
+
+    try {
+      if (blogId && message.trim()) {
+        const response = await axios.post(`/api/comment/add/${blogId}`, {
+          content: message,
+        });
+
+        console.log(response);
+
+        if (response.data.success) {
+          toast.success(response.data.message);
+          setMessage("");
+          fetchComments();
+        }
+      }
+    } catch (error) {
+      toast.error("Failed to send comment");
+      console.error("Comment submission error:", error);
     }
   }
 
@@ -126,7 +166,6 @@ function ViewBlog() {
                   <Heart
                     className="size-5 text-red-500 transition-all"
                     fill={isLiked ? "#ef4444" : "transparent"}
-                    stroke={isLiked ? "#ef4444" : "currentColor"}
                   />
                 </Button>
                 <span className="text-sm font-medium">{likeCount} likes</span>
@@ -158,14 +197,29 @@ function ViewBlog() {
         </article>
         <Separator className=" my-6" />
         <footer>
-          <AddComment blogId={blogId as string} />
+          <div className="grid w-full gap-2">
+            <Textarea
+              placeholder="Type your message here."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+            <Button onClick={handleSendMessage}>
+              {status == "authenticated"
+                ? "Send Message"
+                : "Login to send message"}
+            </Button>
+          </div>
           <div className="mt-8">
             <h2 className="text-2xl font-bold mb-4">Comments</h2>
             {comments.map((comment: any) => (
               <div key={comment.id} className=" rounded-lg mb-4 border p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <Avatar className="h-6 w-6">
-                    <AvatarImage src={comment.user?.image} />
+                    <AvatarImage
+                      src={
+                        comment.user?.image || "https://github.com/shadcn.png"
+                      }
+                    />
                     <AvatarFallback>
                       {comment.user?.name?.charAt(0)}
                     </AvatarFallback>
