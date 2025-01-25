@@ -1,20 +1,28 @@
 "use client";
 
-import axios from "axios";
-import { useParams, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
-import parse from "html-react-parser";
-import Image from "next/image";
-import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, Loader2 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import AddComment from "@/components/client/AddComment";
-import { Blog, User } from "@prisma/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Blog, User } from "@prisma/client";
+import axios from "axios";
+import parse from "html-react-parser";
+import { Brain, Heart, Loader2, Pencil } from "lucide-react";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 function ViewBlog() {
   const { blogId } = useParams();
@@ -25,13 +33,20 @@ function ViewBlog() {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [summarizedContent, setSummarizedContent] = useState("");
+
+  const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  const genAI = new GoogleGenerativeAI(apiKey as string);
+
+  const model = genAI.getGenerativeModel({
+    model: "gemini-1.5-flash",
+  });
 
   const { data: session, status } = useSession();
   const router = useRouter();
 
   async function fetchBlogDetails() {
     try {
-      setIsLoading(true);
       const response = await axios.get(`/api/blog/get/${blogId}`);
       console.log(response);
 
@@ -40,7 +55,6 @@ function ViewBlog() {
         setUser(response.data.blog.user);
         setComments(response.data.blog.comments);
         setLikeCount(response.data.blog.likes.length);
-        console.log(session);
 
         if (session?.user?.id) {
           const likeStatus = response.data.blog.likes.some(
@@ -55,8 +69,6 @@ function ViewBlog() {
       }
     } catch (error) {
       toast.error("Failed to fetch blog");
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -123,11 +135,41 @@ function ViewBlog() {
     }
   }
 
+  const generationConfig = {
+    temperature: 1,
+    topP: 0.95,
+    topK: 40,
+    maxOutputTokens: 8192,
+    responseMimeType: "text/plain",
+  };
+
+  async function summarize(content: string) {
+    setIsLoading(true);
+    try {
+      const chatSession = model.startChat({
+        generationConfig,
+        history: [],
+      });
+
+      const result = await chatSession.sendMessage(
+        `Summarize the content ${content}`
+      );
+      console.log(result.response.text());
+      setSummarizedContent(result.response.text());
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   useEffect(() => {
+    console.log("Session:", session);
+    console.log("Status:", status);
     fetchBlogDetails();
   }, [blogId]);
 
-  if (isLoading) {
+  if (status === "loading") {
     return (
       <div className="flex justify-center items-center h-screen">
         <Loader2 className="animate-spin" />
@@ -148,10 +190,14 @@ function ViewBlog() {
             />
           </div>
         )}
-        <header>
-          <h1 className="text-4xl font-bold mb-4">{blog.title}</h1>
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
+        <header className="space-y-4 sm:space-y-6">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">
+            {blog.title}
+          </h1>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Author Info */}
               <div className="flex items-center space-x-3">
                 <Avatar className="h-8 w-8">
                   <AvatarImage
@@ -159,28 +205,70 @@ function ViewBlog() {
                   />
                   <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
                 </Avatar>
-                <span>{user?.name}</span>
+                <span className="text-sm sm:text-base">{user?.name}</span>
               </div>
+
+              {/* Like Button */}
               <div className="flex items-center gap-1">
                 <Button variant="ghost" size="sm" onClick={handleLike}>
                   <Heart
-                    className="size-5 text-red-500 transition-all"
+                    className="size-4 sm:size-5 text-red-500 transition-all"
                     fill={isLiked ? "#ef4444" : "transparent"}
                   />
                 </Button>
-                <span className="text-sm font-medium">{likeCount} likes</span>
+                <span className="text-xs sm:text-sm font-medium">
+                  {likeCount} likes
+                </span>
               </div>
-              <div>
-                {session?.user?.id == blog.author && (
-                  <Link href={`/blog/edit/${blogId}`}>
-                    <Button variant="outline" size="sm" className="ml-2">
-                      Edit
-                    </Button>
-                  </Link>
-                )}
-              </div>
+
+              {/* Summarize Button */}
+              <Dialog>
+                <DialogTrigger>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    onClick={() => summarize(blog.content)}
+                  >
+                    <Brain className="size-4" />
+                    <span className="hidden sm:block">Summarize</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl font-bold">
+                      Blog Summary
+                    </DialogTitle>
+                    <DialogDescription className="mt-4">
+                      {isLoading ? (
+                        <div className="flex justify-center items-center py-8">
+                          <Loader2 className="size-8 animate-spin text-primary" />
+                        </div>
+                      ) : (
+                        <div className="prose prose-slate max-w-none">
+                          <p className="text-base leading-relaxed whitespace-pre-wrap">
+                            {summarizedContent}
+                          </p>
+                        </div>
+                      )}
+                    </DialogDescription>
+                  </DialogHeader>
+                </DialogContent>
+              </Dialog>
+
+              {/* Edit Button */}
+              {session?.user?.id == blog.author && (
+                <Link href={`/blog/edit/${blogId}`}>
+                  <Button variant="outline" size="sm">
+                    <Pencil className="size-4" />
+                    <span className="hidden sm:block ml-2">Edit</span>
+                  </Button>
+                </Link>
+              )}
             </div>
-            <time>
+
+            {/* Date */}
+            <time className="text-sm text-muted-foreground">
               {new Date(blog.createdAt).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
@@ -189,6 +277,7 @@ function ViewBlog() {
             </time>
           </div>
         </header>
+
         <Separator className=" my-6" />
         <article className="prose prose-lg max-w-none prose-pre:bg-gray-100 prose-pre:p-4 prose-pre:rounded-lg prose-pre:overflow-x-auto">
           <div className="max-w-full overflow-x-hidden">
