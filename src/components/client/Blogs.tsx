@@ -14,28 +14,28 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import BlogCard from "./BlogCard";
 import { Blog } from "@prisma/client";
-
-// export interface Blog {
-//   id: string;
-//   title: string;
-//   thumbnail: string;
-//   content: string;
-//   tags: string[];
-//   author: string;
-//   createdAt: Date;
-// }
+import { toast } from "sonner";
+import { Skeleton } from "../ui/skeleton";
 
 function Blogs() {
   const [blogs, setBlogs] = useState<Blog[] | null>();
   const [pages, setPages] = useState();
   const [currPage, setCurrPage] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   async function fetchBlogs() {
-    const response = await axios.get(`/api/blog/get?page=${currPage}`);
+    setLoading(true);
+    try {
+      const response = await axios.get(`/api/blog/get?page=${currPage}`);
 
-    if (response.data.success) {
-      setBlogs(response.data.blogs);
-      setPages(response.data.totalPages);
+      if (response.data.success) {
+        setBlogs(response.data.blogs);
+        setPages(response.data.totalPages);
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -83,7 +83,34 @@ function Blogs() {
         </div>
       </CardHeader>
       <CardContent className=" grid grid-cols-1 gap-2">
-        {blogs && blogs.map((item) => <BlogCard blog={item} key={item.id} />)}
+        {loading ? (
+          <Card className="w-full">
+            <div className="flex flex-col md:flex-row">
+              <CardHeader className="p-3 md:p-4 lg:p-5">
+                <Skeleton className="w-full md:w-48 lg:w-64 h-48 rounded-lg" />
+              </CardHeader>
+              <div className="flex flex-col justify-around flex-1 p-3 md:p-4">
+                <CardContent className="space-y-3 p-0">
+                  <Skeleton className="h-6 w-3/4" />
+                  <div className="flex flex-wrap gap-2">
+                    <Skeleton className="h-5 w-16" />
+                    <Skeleton className="h-5 w-16" />
+                    <Skeleton className="h-5 w-16" />
+                  </div>
+                  <Skeleton className="h-4 w-32" />
+                </CardContent>
+                <CardFooter className="p-0 mt-4">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                </CardFooter>
+              </div>
+            </div>
+          </Card>
+        ) : (
+          blogs?.map((item) => <BlogCard blog={item} key={item.id} />)
+        )}
       </CardContent>
       <CardFooter>
         {pages && pages > 1 ? (

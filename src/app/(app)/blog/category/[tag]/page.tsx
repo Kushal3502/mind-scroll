@@ -1,7 +1,6 @@
 "use client";
 
 import BlogCard from "@/components/client/BlogCard";
-import { Blog } from "@/components/client/Blogs";
 import Category from "@/components/client/Category";
 import {
   Card,
@@ -17,9 +16,12 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Blog } from "@prisma/client";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 function TagBlog() {
   const { tag } = useParams();
@@ -27,15 +29,23 @@ function TagBlog() {
   const [blogs, setBlogs] = useState<Blog[] | null>();
   const [pages, setPages] = useState();
   const [currPage, setCurrPage] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   async function fetchBlogs() {
-    const response = await axios.get(
-      `/api/blog/get?tag=${tag}&page=${currPage}`
-    );
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `/api/blog/get?tag=${tag}&page=${currPage}`
+      );
 
-    if (response.data.success) {
-      setBlogs(response.data.blogs);
-      setPages(response.data.totalPages);
+      if (response.data.success) {
+        setBlogs(response.data.blogs);
+        setPages(response.data.totalPages);
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -86,7 +96,32 @@ function TagBlog() {
             </div>
           </CardHeader>
           <CardContent className=" grid grid-cols-1 gap-2">
-            {blogs && blogs.length > 0 ? (
+            {loading ? (
+              <Card className="w-full">
+                <div className="flex flex-col md:flex-row">
+                  <CardHeader className="p-3 md:p-4 lg:p-5">
+                    <Skeleton className="w-full md:w-48 lg:w-64 h-48 rounded-lg" />
+                  </CardHeader>
+                  <div className="flex flex-col justify-around flex-1 p-3 md:p-4">
+                    <CardContent className="space-y-3 p-0">
+                      <Skeleton className="h-6 w-3/4" />
+                      <div className="flex flex-wrap gap-2">
+                        <Skeleton className="h-5 w-16" />
+                        <Skeleton className="h-5 w-16" />
+                        <Skeleton className="h-5 w-16" />
+                      </div>
+                      <Skeleton className="h-4 w-32" />
+                    </CardContent>
+                    <CardFooter className="p-0 mt-4">
+                      <div className="flex items-center gap-3">
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <Skeleton className="h-4 w-24" />
+                      </div>
+                    </CardFooter>
+                  </div>
+                </div>
+              </Card>
+            ) : blogs && blogs.length > 0 ? (
               blogs.map((item) => <BlogCard blog={item} key={item.id} />)
             ) : (
               <span>No results found</span>

@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Blog, User } from "@prisma/client";
@@ -34,6 +35,8 @@ function ViewBlog() {
   const [likeCount, setLikeCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [summarizedContent, setSummarizedContent] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
   const genAI = new GoogleGenerativeAI(apiKey as string);
@@ -46,6 +49,7 @@ function ViewBlog() {
   const router = useRouter();
 
   async function fetchBlogDetails() {
+    setLoading(true);
     try {
       const response = await axios.get(`/api/blog/get/${blogId}`);
       console.log(response);
@@ -69,6 +73,8 @@ function ViewBlog() {
       }
     } catch (error) {
       toast.error("Failed to fetch blog");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -115,6 +121,8 @@ function ViewBlog() {
       return;
     }
 
+    setSending(true);
+
     try {
       if (blogId && message.trim()) {
         const response = await axios.post(`/api/comment/add/${blogId}`, {
@@ -132,6 +140,8 @@ function ViewBlog() {
     } catch (error) {
       toast.error("Failed to send comment");
       console.error("Comment submission error:", error);
+    } finally {
+      setSending(false);
     }
   }
 
@@ -164,16 +174,53 @@ function ViewBlog() {
   }
 
   useEffect(() => {
-    console.log("Session:", session);
-    console.log("Status:", status);
     fetchBlogDetails();
   }, [blogId]);
 
-  if (status === "loading") {
+  if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <Loader2 className="animate-spin" />
-      </div>
+      <article className="max-w-4xl mx-auto px-4 py-8">
+        <Skeleton className="w-full h-[400px] rounded-lg mb-8" />
+        <header className="space-y-6">
+          <Skeleton className="h-12 w-3/4" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-8 w-8 rounded-full" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+              <div className="flex gap-2">
+                <Skeleton className="h-8 w-20" />
+                <Skeleton className="h-8 w-24" />
+              </div>
+            </div>
+            <Skeleton className="h-4 w-32" />
+          </div>
+        </header>
+        <div className="space-y-4 mt-8">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-3/4" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6" />
+        </div>
+        <div className="mt-8">
+          <Skeleton className="h-8 w-32 mb-4" />
+          <Skeleton className="h-24 w-full mb-4" />
+          <Skeleton className="h-10 w-32 mb-8" />
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-6 w-6 rounded-full" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <Skeleton className="h-16 w-full" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </article>
     );
   }
 
@@ -197,7 +244,6 @@ function ViewBlog() {
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-2">
-              {/* Author Info */}
               <div className="flex items-center space-x-3">
                 <Avatar className="h-8 w-8">
                   <AvatarImage
@@ -207,8 +253,6 @@ function ViewBlog() {
                 </Avatar>
                 <span className="text-sm sm:text-base">{user?.name}</span>
               </div>
-
-              {/* Like Button */}
               <div className="flex items-center gap-1">
                 <Button variant="ghost" size="sm" onClick={handleLike}>
                   <Heart
@@ -220,8 +264,6 @@ function ViewBlog() {
                   {likeCount} likes
                 </span>
               </div>
-
-              {/* Summarize Button */}
               <Dialog>
                 <DialogTrigger>
                   <Button
@@ -255,8 +297,6 @@ function ViewBlog() {
                   </DialogHeader>
                 </DialogContent>
               </Dialog>
-
-              {/* Edit Button */}
               {session?.user?.id == blog.author && (
                 <Link href={`/blog/edit/${blogId}`}>
                   <Button variant="outline" size="sm">
@@ -266,8 +306,6 @@ function ViewBlog() {
                 </Link>
               )}
             </div>
-
-            {/* Date */}
             <time className="text-sm text-muted-foreground">
               {new Date(blog.createdAt).toLocaleDateString("en-US", {
                 year: "numeric",
@@ -277,7 +315,6 @@ function ViewBlog() {
             </time>
           </div>
         </header>
-
         <Separator className=" my-6" />
         <article className="prose prose-lg max-w-none prose-pre:bg-gray-100 prose-pre:p-4 prose-pre:rounded-lg prose-pre:overflow-x-auto">
           <div className="max-w-full overflow-x-hidden">
@@ -292,32 +329,45 @@ function ViewBlog() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
-            <Button onClick={handleSendMessage}>
-              {status == "authenticated"
-                ? "Send Message"
-                : "Login to send message"}
+            <Button onClick={handleSendMessage} disabled={sending}>
+              {status == "authenticated" ? (
+                sending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <p>Sending</p>
+                  </>
+                ) : (
+                  "Send Message"
+                )
+              ) : (
+                "Login to send message"
+              )}
             </Button>
           </div>
           <div className="mt-8">
             <h2 className="text-2xl font-bold mb-4">Comments</h2>
-            {comments.map((comment: any) => (
-              <div key={comment.id} className=" rounded-lg mb-4 border p-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <Avatar className="h-6 w-6">
-                    <AvatarImage
-                      src={
-                        comment.user?.image || "https://github.com/shadcn.png"
-                      }
-                    />
-                    <AvatarFallback>
-                      {comment.user?.name?.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="font-medium">{comment.user?.name}</span>
+            {comments.length > 0 ? (
+              comments.map((comment: any) => (
+                <div key={comment.id} className=" rounded-lg mb-4 border p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage
+                        src={
+                          comment.user?.image || "https://github.com/shadcn.png"
+                        }
+                      />
+                      <AvatarFallback>
+                        {comment.user?.name?.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="font-medium">{comment.user?.name}</span>
+                  </div>
+                  <p>{comment.content}</p>
                 </div>
-                <p>{comment.content}</p>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p>No comments</p>
+            )}
           </div>
         </footer>
       </article>

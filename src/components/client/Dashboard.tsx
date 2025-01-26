@@ -111,7 +111,7 @@ export default function Dashboard() {
                         <TableHead>Thumbnail</TableHead>
                         <TableHead>Title</TableHead>
                         <TableHead>Published</TableHead>
-                        <TableHead>Actions</TableHead>
+                        <TableHead className="text-center">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -136,7 +136,7 @@ export default function Dashboard() {
                               )}
                             </time>
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell className="text-right flex justify-center items-center gap-2">
                             <Link href={`/blog/${item.id}`}>
                               <Button size={"sm"} variant={"outline"}>
                                 <Eye />
@@ -149,7 +149,7 @@ export default function Dashboard() {
                             </Link>
                             <Button
                               size={"sm"}
-                              variant={"outline"}
+                              variant={"destructive"}
                               onClick={() => handleDelete(item.id)}
                             >
                               <Trash />

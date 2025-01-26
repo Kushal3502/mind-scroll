@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-// import { Blog } from "./Blogs";
 import axios from "axios";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import Image from "next/image";
@@ -9,15 +8,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import { Blog, User } from "@prisma/client";
-
-// interface BlogCardProps {
-//   blog: Blog;
-// }
-
-// export interface User {
-//   name: string;
-//   image: string;
-// }
 
 function BlogCard({ blog }: { blog: Blog }) {
   const [user, setUser] = useState<User | null>();
