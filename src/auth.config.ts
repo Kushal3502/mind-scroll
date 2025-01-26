@@ -31,7 +31,7 @@ export default {
               "Invalid credentials:",
               parsedCredentials.error.errors
             );
-              throw new Error("Invalid email or password format");
+            throw new Error("Invalid email or password format");
           }
 
           // get user
@@ -59,6 +59,7 @@ export default {
           }
 
           const { password, ...userWithoutPassword } = user;
+
           return userWithoutPassword;
         } catch (error) {
           console.error("Authorization error:", error);

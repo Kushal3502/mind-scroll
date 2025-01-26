@@ -69,7 +69,7 @@ function ViewBlog() {
 
         if (session?.user?.id) {
           const likeStatus = response.data.blog.likes.some(
-            // @ts-expect-error
+            // @ts-expect-error - Session user type mismatch with like.userId comparison
             (like) => like.userId === session.user?.id
           );
           console.log(likeStatus);

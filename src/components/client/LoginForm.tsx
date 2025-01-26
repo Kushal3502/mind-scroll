@@ -89,10 +89,10 @@ function LoginForm() {
       </CardHeader>
       <CardContent>
         <AuthForm
-          // @ts-expect-error
+          // @ts-expect-error - Form types mismatch between react-hook-form and component props
           form={form}
           formfields={fields}
-          // @ts-expect-error
+          // @ts-expect-error - Callback function type mismatch with component props
           onSubmit={onSubmit}
           buttonText="SignIn"
         />
