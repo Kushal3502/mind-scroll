@@ -33,6 +33,7 @@ function Blogs() {
         setPages(response.data.totalPages);
       }
     } catch (error) {
+      console.error("Fetch blog error :: ", error);
       toast.error("Something went wrong");
     } finally {
       setLoading(false);

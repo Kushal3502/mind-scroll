@@ -44,6 +44,7 @@ function TagBlog() {
         setPages(response.data.totalPages);
       }
     } catch (error) {
+      console.error("Fetch blog error :: ", error);
       toast.error("Something went wrong");
     } finally {
       setLoading(false);
@@ -92,7 +93,7 @@ function TagBlog() {
           <CardHeader>
             <div className=" flex justify-start items-center gap-2">
               <span className=" text-xl font-semibold">
-                Showing results for "{tag}"
+                Showing results for &quot;{tag}&quot;
               </span>
             </div>
           </CardHeader>

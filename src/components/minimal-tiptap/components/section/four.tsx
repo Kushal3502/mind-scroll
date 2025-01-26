@@ -1,9 +1,9 @@
-import * as React from "react";
-import type { Editor } from "@tiptap/react";
-import type { FormatAction } from "../../types";
 import type { toggleVariants } from "@/components/ui/toggle";
+import { ListBulletIcon } from "@radix-ui/react-icons";
+import type { Editor } from "@tiptap/react";
 import type { VariantProps } from "class-variance-authority";
-import { CaretDownIcon, ListBulletIcon } from "@radix-ui/react-icons";
+import * as React from "react";
+import type { FormatAction } from "../../types";
 import { ToolbarSection } from "../toolbar-section";
 
 type ListItemAction = "orderedList" | "bulletList";
@@ -53,7 +53,6 @@ interface SectionFourProps extends VariantProps<typeof toggleVariants> {
 export const SectionFour: React.FC<SectionFourProps> = ({
   editor,
   activeActions = formatActions.map((action) => action.value),
-  mainActionCount = 0,
   size,
   variant,
 }) => {

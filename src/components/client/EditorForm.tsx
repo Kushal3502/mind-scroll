@@ -15,16 +15,18 @@ import { Upload, Loader2 } from "lucide-react";
 import category from "@/category.json";
 import { MultiSelect } from "./MultiSelect";
 import { Editor } from "./Editor";
+import Image from "next/image";
+import { Blog } from "@prisma/client";
 
 interface EditorFormProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<Blog>;
   data?: {
     title: string;
     thumbnail: string;
     content: string;
     tags: string[];
   };
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: (data: Blog) => Promise<void>;
   buttonText: string;
   isEditing?: boolean;
 }
@@ -38,10 +40,12 @@ function EditorForm({
 }: EditorFormProps) {
   const [preview, setPreview] = React.useState<string>("");
 
-  const handleImagePreview = (e: any) => {
-    const file = e.target.files[0];
+  const handleImagePreview = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
-      setPreview(URL.createObjectURL(file));
+      const objectUrl = URL.createObjectURL(file);
+      setPreview(objectUrl);
+      return () => URL.revokeObjectURL(objectUrl);
     }
   };
 
@@ -80,9 +84,11 @@ function EditorForm({
                     <div className="space-y-4 flex flex-col justify-center items-center">
                       {data?.thumbnail || preview ? (
                         <div className="h-40 w-full overflow-hidden rounded-lg shadow-sm">
-                          <img
-                            src={preview || data?.thumbnail}
+                          <Image
+                            src={preview || data?.thumbnail || ""}
                             alt="Preview"
+                            width={400}
+                            height={160}
                             className="object-cover w-full h-full"
                           />
                         </div>

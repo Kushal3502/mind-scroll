@@ -44,6 +44,7 @@ function Search() {
         setPages(response.data.totalPages);
       }
     } catch (error) {
+      console.error("Blog fetch error :: ", error);
       toast.error("Something went wrong");
     } finally {
       setLoading(false);
@@ -92,7 +93,7 @@ function Search() {
           <CardHeader>
             <div className=" flex justify-start items-center gap-2">
               <span className=" text-xl font-semibold">
-                Showing results for "{query}"
+                Showing results for &quot;{query}&quot;
               </span>
             </div>
           </CardHeader>

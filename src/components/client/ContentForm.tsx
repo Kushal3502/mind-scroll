@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { MultiSelect } from "./MultiSelect";
+import Image from "next/image";
 
 interface ContentFormProp {
   data?: {
@@ -45,10 +46,12 @@ function ContentForm({ data }: ContentFormProp) {
     },
   });
 
-  const handleImagePreview = (e: any) => {
-    const file = e.target.files[0];
+  const handleImagePreview = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
-      setPreview(URL.createObjectURL(file));
+      const objectUrl = URL.createObjectURL(file);
+      setPreview(objectUrl);
+      return () => URL.revokeObjectURL(objectUrl);
     }
   };
 
@@ -81,6 +84,7 @@ function ContentForm({ data }: ContentFormProp) {
         }
       }
     } catch (error) {
+      console.error("Submission error :: ", error);
       toast.error("Something went wrong");
     }
   }
@@ -116,12 +120,14 @@ function ContentForm({ data }: ContentFormProp) {
                 <FormItem className=" rounded-xl p-4">
                   <FormControl>
                     <div className="space-y-4 flex flex-col justify-center items-center">
-                      {data?.thumbnail || preview ? (
+                      {preview || data?.thumbnail ? (
                         <div className="h-40 w-full overflow-hidden rounded-lg shadow-sm">
-                          <img
-                            src={preview || data?.thumbnail}
+                          <Image
+                            src={preview || data?.thumbnail || ""}
                             alt="Preview"
-                            className="object-cover w-full h-full "
+                            width={400}
+                            height={160}
+                            className="object-cover w-full h-full"
                           />
                         </div>
                       ) : (

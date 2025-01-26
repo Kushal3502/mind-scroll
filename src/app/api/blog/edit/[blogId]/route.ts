@@ -50,6 +50,7 @@ export async function PATCH(
       }
     );
   } catch (error) {
+    console.error("Blog edit error :: ", error);
     return NextResponse.json(
       {
         success: false,

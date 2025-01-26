@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { Blog, User } from "@prisma/client";
+import { Blog, Comment, User } from "@prisma/client";
 import axios from "axios";
 import parse from "html-react-parser";
 import { Brain, Heart, Loader2, Pencil } from "lucide-react";
@@ -25,10 +25,17 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+type CommentWithUser = Comment & {
+  user: {
+    name: string | null;
+    image: string | null;
+  };
+};
+
 function ViewBlog() {
   const { blogId } = useParams();
   const [blog, setBlog] = useState<Blog>();
-  const [comments, setComments] = useState([]);
+  const [comments, setComments] = useState<CommentWithUser[] | null>();
   const [message, setMessage] = useState("");
   const [user, setUser] = useState<User | null>();
   const [isLiked, setIsLiked] = useState(false);
@@ -62,7 +69,8 @@ function ViewBlog() {
 
         if (session?.user?.id) {
           const likeStatus = response.data.blog.likes.some(
-            (like: any) => like.userId === session.user?.id
+            // @ts-expect-error
+            (like) => like.userId === session.user?.id
           );
           console.log(likeStatus);
 
@@ -72,6 +80,7 @@ function ViewBlog() {
         toast.error(response.data.message);
       }
     } catch (error) {
+      console.error("Fetch blog error :: ", error);
       toast.error("Failed to fetch blog");
     } finally {
       setLoading(false);
@@ -164,9 +173,9 @@ function ViewBlog() {
       const result = await chatSession.sendMessage(
         `Summarize the content ${content}`
       );
-      console.log(result.response.text());
       setSummarizedContent(result.response.text());
     } catch (error) {
+      console.error("Fetch blog error :: ", error);
       toast.error("Something went wrong");
     } finally {
       setIsLoading(false);
@@ -344,8 +353,8 @@ function ViewBlog() {
           </div>
           <div className="mt-8">
             <h2 className="text-2xl font-bold mb-4">Comments</h2>
-            {comments.length > 0 ? (
-              comments.map((comment: any) => (
+            {comments && comments.length > 0 ? (
+              comments.map((comment) => (
                 <div key={comment.id} className=" rounded-lg mb-4 border p-3">
                   <div className="flex items-center gap-2 mb-2">
                     <Avatar className="h-6 w-6">

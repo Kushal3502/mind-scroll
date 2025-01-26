@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import AuthForm from "./form";
+import AuthForm, { FormFieldProps } from "./form";
 import { useForm } from "react-hook-form";
 import { signInSchema } from "@/lib/zod";
 import { z } from "zod";
@@ -20,7 +20,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import GoogleLogin from "./GoogleLogin";
 
-const fields = [
+const fields: FormFieldProps[] = [
   {
     name: "email",
     label: "Email",
@@ -35,10 +35,12 @@ const fields = [
   },
 ];
 
+type SignInFormValues = z.infer<typeof signInSchema>;
+
 function LoginForm() {
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof signInSchema>>({
+  const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
       email: "",
@@ -47,7 +49,7 @@ function LoginForm() {
     mode: "onChange",
   });
 
-  async function onSubmit(values: z.infer<typeof signInSchema>) {
+  async function onSubmit(values: SignInFormValues) {
     console.log(values);
 
     const toastId = toast.loading("Please wait...");
@@ -57,17 +59,21 @@ function LoginForm() {
 
       if (response?.success) {
         router.push("/home");
-
-        return toast.success(response?.message, {
+        return toast.success(response.message as string, {
           id: toastId,
         });
       } else {
-        return toast.error(response?.message, {
+        return toast.error(response.message as string, {
           id: toastId,
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "An error occurred during signin";
+      toast.error(errorMessage);
     }
   }
 
@@ -83,8 +89,10 @@ function LoginForm() {
       </CardHeader>
       <CardContent>
         <AuthForm
+          // @ts-expect-error
           form={form}
           formfields={fields}
+          // @ts-expect-error
           onSubmit={onSubmit}
           buttonText="SignIn"
         />

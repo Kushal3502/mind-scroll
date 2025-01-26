@@ -51,6 +51,7 @@ function AddBlog() {
         }
       }
     } catch (error) {
+      console.error("Add blog error :: ", error);
       toast.error("Something went wrong");
     }
   }

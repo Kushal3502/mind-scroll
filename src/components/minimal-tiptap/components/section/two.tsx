@@ -1,17 +1,16 @@
-import * as React from "react";
-import type { Editor } from "@tiptap/react";
-import type { FormatAction } from "../../types";
 import type { toggleVariants } from "@/components/ui/toggle";
-import type { VariantProps } from "class-variance-authority";
 import {
   CodeIcon,
-  DotsHorizontalIcon,
   FontBoldIcon,
   FontItalicIcon,
   StrikethroughIcon,
   TextNoneIcon,
-  UnderlineIcon,
+  UnderlineIcon
 } from "@radix-ui/react-icons";
+import type { Editor } from "@tiptap/react";
+import type { VariantProps } from "class-variance-authority";
+import * as React from "react";
+import type { FormatAction } from "../../types";
 import { ToolbarSection } from "../toolbar-section";
 
 type TextStyleAction =
@@ -104,7 +103,6 @@ interface SectionTwoProps extends VariantProps<typeof toggleVariants> {
 export const SectionTwo: React.FC<SectionTwoProps> = ({
   editor,
   activeActions = formatActions.map((action) => action.value),
-  mainActionCount = 2,
   size,
   variant,
 }) => {

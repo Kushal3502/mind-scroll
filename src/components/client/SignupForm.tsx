@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import AuthForm from "./form";
+import AuthForm, { FormFieldProps } from "./form";
 import { useForm } from "react-hook-form";
 import { signUpSchema } from "@/lib/zod";
 import { z } from "zod";
@@ -20,7 +20,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import GoogleLogin from "./GoogleLogin";
 
-const fields = [
+const fields: FormFieldProps[] = [
   {
     name: "username",
     label: "Username",
@@ -66,9 +66,13 @@ function SignupForm() {
       } else {
         toast.error(response?.message);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      toast.error(error.message);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "An error occurred during signup";
+      toast.error(errorMessage);
     }
   }
 
@@ -84,8 +88,10 @@ function SignupForm() {
       </CardHeader>
       <CardContent>
         <AuthForm
+          // @ts-expect-error
           form={form}
           formfields={fields}
+          // @ts-expect-error
           onSubmit={onSubmit}
           buttonText="SignUp"
         />

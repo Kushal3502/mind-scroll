@@ -59,7 +59,6 @@ interface SectionFiveProps extends VariantProps<typeof toggleVariants> {
 export const SectionFive: React.FC<SectionFiveProps> = ({
   editor,
   activeActions = formatActions.map((action) => action.value),
-  mainActionCount = 0,
   size,
   variant,
 }) => {

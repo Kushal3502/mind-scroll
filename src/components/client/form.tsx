@@ -14,11 +14,15 @@ import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 
-interface FormFieldProps {
+export interface FormFieldProps {
   name: string;
   label: string;
   type: string;
   placeholder: string;
+}
+
+interface FormData {
+  [key: string]: string;
 }
 
 function AuthForm({
@@ -27,9 +31,9 @@ function AuthForm({
   onSubmit,
   buttonText,
 }: {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<FormData>;
   formfields: FormFieldProps[];
-  onSubmit: any;
+  onSubmit: (data: FormData) => Promise<void>;
   buttonText: string;
 }) {
   return (

@@ -22,9 +22,7 @@ export async function GET(
             },
           },
         },
-        likes: {
-          
-        }
+        likes: {},
       },
     });
 
@@ -52,6 +50,7 @@ export async function GET(
       }
     );
   } catch (error) {
+    console.error("Fetch blog error :: ", error);
     return NextResponse.json(
       {
         success: false,
