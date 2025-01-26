@@ -1,5 +1,6 @@
 import Blogs from "@/components/client/Blogs";
 import Category from "@/components/client/Category";
+import SearchBox from "@/components/client/SearchBox";
 
 function Home() {
   return (
@@ -8,7 +9,10 @@ function Home() {
         <Blogs />
       </div>
       <div className=" col-span-1">
-        <Category />
+        <div className=" grid grid-cols-1 gap-2">
+          <SearchBox />
+          <Category />
+        </div>
       </div>
     </div>
   );

@@ -283,9 +283,7 @@ function ViewBlog() {
                     </DialogTitle>
                     <DialogDescription className="mt-4">
                       {isLoading ? (
-                        <div className="flex justify-center items-center py-8">
-                          <Loader2 className="size-8 animate-spin text-primary" />
-                        </div>
+                        <Loader2 className="size-8 animate-spin text-primary" />
                       ) : (
                         <div className="prose prose-slate max-w-none">
                           <p className="text-base leading-relaxed whitespace-pre-wrap">

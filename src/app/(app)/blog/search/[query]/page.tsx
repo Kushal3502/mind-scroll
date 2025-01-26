@@ -1,14 +1,6 @@
 "use client";
 
-import BlogCard from "@/components/client/BlogCard";
 import Category from "@/components/client/Category";
-import SearchBox from "@/components/client/SearchBox";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
 import {
   Pagination,
   PaginationContent,
@@ -17,15 +9,23 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Blog } from "@prisma/client";
 import axios from "axios";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import BlogCard from "@/components/client/BlogCard";
+import { useParams } from "next/navigation";
+import SearchBox from "@/components/client/SearchBox";
 
-function TagBlog() {
-  const { tag } = useParams();
+function Search() {
+  const { query } = useParams();
 
   const [blogs, setBlogs] = useState<Blog[] | null>();
   const [pages, setPages] = useState();
@@ -36,7 +36,7 @@ function TagBlog() {
     setLoading(true);
     try {
       const response = await axios.get(
-        `/api/blog/get?tag=${tag}&page=${currPage}`
+        `/api/blog/get?query=${query}&page=${currPage}`
       );
 
       if (response.data.success) {
@@ -92,7 +92,7 @@ function TagBlog() {
           <CardHeader>
             <div className=" flex justify-start items-center gap-2">
               <span className=" text-xl font-semibold">
-                Showing results for "{tag}"
+                Showing results for "{query}"
               </span>
             </div>
           </CardHeader>
@@ -167,4 +167,4 @@ function TagBlog() {
   );
 }
 
-export default TagBlog;
+export default Search;
