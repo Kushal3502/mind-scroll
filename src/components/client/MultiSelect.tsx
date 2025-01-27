@@ -135,8 +135,8 @@ export const MultiSelect = React.forwardRef<
       modalPopover = false,
       className,
       ...props
-    },
-    ref
+    }: MultiSelectProps,
+    ref: React.ForwardedRef<HTMLButtonElement>
   ) => {
     const [selectedValues, setSelectedValues] =
       React.useState<string[]>(defaultValue);
