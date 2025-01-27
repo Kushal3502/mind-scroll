@@ -174,6 +174,7 @@ export const useMinimalTiptapEditor = ({
   ...props
 }: UseMinimalTiptapEditorProps) => {
   const throttledSetValue = useThrottle(
+    // @ts-expect-error - Content type from onUpdate prop may not match throttle callback signature
     (value: Content) => onUpdate?.(value),
     throttleDelay
   );
