@@ -18,15 +18,17 @@ import { Editor } from "./Editor";
 import Image from "next/image";
 import { Blog } from "@prisma/client";
 
+export interface BlogFormData {
+  title: string;
+  content: string;
+  thumbnail: string;
+  tags: string[];
+}
+
 interface EditorFormProps {
-  form: UseFormReturn<Blog>;
-  data?: {
-    title: string;
-    thumbnail: string;
-    content: string;
-    tags: string[];
-  };
-  onSubmit: (data: Blog) => Promise<void>;
+  form: UseFormReturn<BlogFormData>;
+  data?: Blog;
+  onSubmit: (data: BlogFormData) => Promise<void>;
   buttonText: string;
   isEditing?: boolean;
 }

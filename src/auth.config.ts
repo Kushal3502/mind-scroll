@@ -58,7 +58,7 @@ export default {
             throw new Error("Incorrect password");
           }
 
-          const { password, ...userWithoutPassword } = user;
+          const { ...userWithoutPassword } = user;
 
           return userWithoutPassword;
         } catch (error) {

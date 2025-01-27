@@ -1,18 +1,17 @@
 "use client";
 
-import EditorForm from "@/components/client/EditorForm";
+import EditorForm, { BlogFormData } from "@/components/client/EditorForm";
 import { contentSchema } from "@/lib/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
 
 function AddBlog() {
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof contentSchema>>({
+  const form = useForm<BlogFormData>({
     resolver: zodResolver(contentSchema),
     defaultValues: {
       title: "",
@@ -22,7 +21,7 @@ function AddBlog() {
     },
   });
 
-  async function handleAddBlog(values: z.infer<typeof contentSchema>) {
+  async function handleAddBlog(values: BlogFormData) {
     console.log(values);
 
     try {

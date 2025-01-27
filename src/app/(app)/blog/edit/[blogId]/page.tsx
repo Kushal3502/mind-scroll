@@ -1,17 +1,14 @@
 "use client";
 
-import { Blog } from "@/components/client/Blogs";
-import EditorForm from "@/components/client/EditorForm";
+import EditorForm, { BlogFormData } from "@/components/client/EditorForm";
 import { contentSchema } from "@/lib/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Blog } from "@prisma/client";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
-
-type FormData = z.infer<typeof contentSchema>;
 
 function EditBlog() {
   const router = useRouter();
@@ -19,7 +16,7 @@ function EditBlog() {
 
   const [blog, setBlog] = useState<Blog | null>(null);
 
-  const form = useForm<FormData>({
+  const form = useForm<BlogFormData>({
     resolver: zodResolver(contentSchema),
     defaultValues: {
       title: "",
@@ -44,7 +41,7 @@ function EditBlog() {
     }
   }
 
-  async function handleBlogUpdate(values: FormData) {
+  async function handleBlogUpdate(values: BlogFormData) {
     console.log(values);
 
     try {
