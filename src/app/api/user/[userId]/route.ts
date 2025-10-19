@@ -26,7 +26,6 @@ export async function GET(
       },
     });
 
-    // if user not found
     if (!user) {
       return NextResponse.json(
         {
